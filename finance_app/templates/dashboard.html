@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-4">Dashboard</h1>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card kpi-card">
+      <div class="card-body">
+        <h6 class="text-muted">Receitas</h6>
+        <h3>{{ receitas|money }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card kpi-card">
+      <div class="card-body">
+        <h6 class="text-muted">Despesas</h6>
+        <h3>{{ despesas|money }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card kpi-card">
+      <div class="card-body">
+        <h6 class="text-muted">Saldo</h6>
+        <h3 class="{{ 'text-success' if saldo>=0 else 'text-danger' }}">{{ saldo|money }}</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">Investimentos por categoria</div>
+      <div class="card-body">
+        {% if inv_por_categoria %}
+          <ul class="list-group">
+            {% for cat, total in inv_por_categoria.items() %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ {'acoes':'Ações','renda_fixa':'Renda Fixa','tesouro_direto':'Tesouro Direto','fiis':'FIIs'}.get(cat, cat) }}
+                <span class="badge bg-primary rounded-pill">{{ total|money }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted mb-0">Sem investimentos lançados ainda.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">Metas</div>
+      <div class="card-body">
+        {% if metas %}
+          {% for m in metas %}
+            {% set progresso = (m.valor_acumulado / m.valor_meta * 100) if m.valor_meta else 0 %}
+            <div class="mb-3">
+              <div class="d-flex justify-content-between">
+                <strong>{{ m.nome }}</strong>
+                <small>{{ m.valor_acumulado|money }} / {{ m.valor_meta|money }} ({{ progresso|round(1) }}%)</small>
+              </div>
+              <div class="progress" role="progressbar" aria-valuenow="{{ progresso|round(0) }}" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar" style="width: {{ progresso if progresso<=100 else 100 }}%"></div>
+              </div>
+              {% if m.prazo %}<small class="text-muted">Prazo: {{ m.prazo.strftime('%d/%m/%Y') }}</small>{% endif %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted mb-0">Sem metas cadastradas.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">Últimas transações</div>
+  <div class="card-body table-responsive">
+    {% if ultimas_transacoes %}
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Data</th><th>Tipo</th><th>Categoria</th><th>Descrição</th><th class="text-end">Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in ultimas_transacoes %}
+        <tr>
+          <td>{{ t.data.strftime('%d/%m/%Y') }}</td>
+          <td><span class="badge {{ 'bg-success' if t.tipo=='receita' else 'bg-danger' }}">{{ t.tipo.title() }}</span></td>
+          <td>{{ t.categoria or '-' }}</td>
+          <td>{{ t.descricao }}</td>
+          <td class="text-end">{{ t.valor|money }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p class="text-muted mb-0">Sem transações ainda.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

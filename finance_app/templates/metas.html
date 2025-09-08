@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-3">Metas & Projetos</h1>
+<div class="row g-3">
+  <div class="col-md-5">
+    <div class="card">
+      <div class="card-header">Nova meta</div>
+      <div class="card-body">
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label">Nome da meta</label>
+            <input class="form-control" name="nome" required placeholder="ex.: Reserva de Emergência">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Valor da meta (R$)</label>
+            <input type="number" step="0.01" class="form-control" name="valor_meta" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Valor acumulado (R$)</label>
+            <input type="number" step="0.01" class="form-control" name="valor_acumulado" value="0">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Prazo</label>
+            <input type="date" class="form-control" name="prazo">
+          </div>
+          <button class="btn btn-primary">Salvar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header">Metas cadastradas</div>
+      <div class="card-body">
+        {% if metas %}
+          {% for m in metas %}
+            {% set progresso = (m.valor_acumulado / m.valor_meta * 100) if m.valor_meta else 0 %}
+            <div class="mb-3 p-3 border rounded">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <strong>{{ m.nome }}</strong>
+                  {% if m.prazo %}<div><small class="text-muted">Prazo: {{ m.prazo.strftime('%d/%m/%Y') }}</small></div>{% endif %}
+                </div>
+                <div class="text-end">
+                  <div>{{ m.valor_acumulado|money }} / {{ m.valor_meta|money }}</div>
+                  <div><small>{{ progresso|round(1) }}%</small></div>
+                </div>
+              </div>
+              <div class="progress mt-2">
+                <div class="progress-bar" style="width: {{ progresso if progresso<=100 else 100 }}%"></div>
+              </div>
+              <div class="text-end mt-2">
+                <form method="post" action="{{ url_for('excluir_meta', gid=m.id) }}" onsubmit="return confirm('Excluir esta meta?')">
+                  <button class="btn btn-sm btn-outline-danger">Excluir</button>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted mb-0">Nenhuma meta cadastrada.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

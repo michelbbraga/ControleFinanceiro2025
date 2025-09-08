@@ -1,0 +1,18 @@
+body { background: #0b0c10; color: #eaf0f1; }
+.navbar { background: #1f2833 !important; }
+.card { background: #1b1e23; border: 1px solid #2b2f36; }
+.card-header { background: #21252b; color: #eaf0f1; border-bottom: 1px solid #2b2f36; }
+.table { color: #eaf0f1; }
+.table thead th { color: #bfc7cf; }
+.table tbody tr { border-color: #2b2f36; }
+.alert-info { background: #0b5ed7; border-color: #0b5ed7; color: #fff; }
+.kpi-card h3 { margin: 0; }
+.progress { background-color: #2b2f36; }
+.progress-bar { background-color: #0d6efd; }
+.badge { font-size: .8rem; }
+.btn-outline-danger { border-color: #dc3545; color: #dc3545; }
+.btn-outline-danger:hover { background-color: #dc3545; color: #fff; }
+a, .btn-link { color: #66fcf1; }
+a:hover { color: #45c9c0; }
+.form-control, .form-select { background: #0f1115; color: #eaf0f1; border: 1px solid #2b2f36; }
+.form-control::placeholder { color: #9aa3ac; }

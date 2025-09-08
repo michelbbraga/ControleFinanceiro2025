@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+{% set label = {'acoes':'A\u00E7\u00F5es','renda_fixa':'Renda Fixa','tesouro_direto':'Tesouro Direto','fiis':'FIIs'}[categoria] %}
+<h1 class="mb-3">Investimentos — {{ label }}</h1>
+<div class="row g-3">
+  <div class="col-md-5">
+    <div class="card">
+      <div class="card-header">Novo investimento</div>
+      <div class="card-body">
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label">Corretora</label>
+            <input class="form-control" name="corretora" placeholder="ex.: Nubank, XP, Clear">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nome do investimento</label>
+            <input class="form-control" name="nome_investimento" required placeholder="ex.: PETR4, CDB Banco X">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Empresa (quando aplicável)</label>
+            <input class="form-control" name="nome_empresa" placeholder="ex.: Petrobras, Banco X">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Data da compra</label>
+            <input type="date" class="form-control" name="data_compra">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Data de vencimento (se houver)</label>
+            <input type="date" class="form-control" name="data_vencimento">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Valor investido (R$)</label>
+            <input type="number" step="0.01" class="form-control" name="valor_investido" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Taxa de retorno (% a.a.)</label>
+            <input type="number" step="0.0001" class="form-control" name="taxa_retorno" placeholder="ex.: 12.5">
+          </div>
+          <button class="btn btn-primary">Salvar</button>
+        </form>
+      </div>
+    </div>
+    <div class="mt-3">
+      <div class="alert alert-info">Total investido em {{ label }}: <strong>{{ total_categoria|money }}</strong></div>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header">Investimentos cadastrados</div>
+      <div class="card-body table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>Corretora</th><th>Investimento</th><th>Empresa</th><th>Compra</th><th>Vencimento</th><th class="text-end">Valor</th><th class="text-end">Taxa (% a.a.)</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in investimentos %}
+            <tr>
+              <td>{{ i.corretora or '-' }}</td>
+              <td>{{ i.nome_investimento }}</td>
+              <td>{{ i.nome_empresa or '-' }}</td>
+              <td>{{ i.data_compra.strftime('%d/%m/%Y') if i.data_compra else '-' }}</td>
+              <td>{{ i.data_vencimento.strftime('%d/%m/%Y') if i.data_vencimento else '-' }}</td>
+              <td class="text-end">{{ i.valor_investido|money }}</td>
+              <td class="text-end">{{ ('%.4f' % i.taxa_retorno) if i.taxa_retorno is not none else '-' }}</td>
+              <td class="text-end">
+                <form method="post" action="{{ url_for('excluir_investimento', iid=i.id) }}" onsubmit="return confirm('Excluir este investimento?')">
+                  <button class="btn btn-sm btn-outline-danger">Excluir</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
