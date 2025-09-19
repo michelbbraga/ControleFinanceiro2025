@@ -40,6 +40,11 @@ class Investment(db.Model):
     valor_investido = db.Column(db.Float, nullable=False, default=0.0)
     taxa_retorno = db.Column(db.Float, nullable=True)  # em % ao ano, quando aplicável
 
+class payment_type(db.Model):
+    __tablename__ = 'payment_type'
+    id = db.Column(db.Integer, primary_key=True)
+    name_payment_type = db.Column(db.String(60), nullable=True)
+
 # ---------------- Helpers ----------------
 
 def parse_date(date_str):
@@ -95,14 +100,22 @@ def transacoes():
         categoria = request.form.get('categoria') or None
         descricao = request.form.get('descricao')
         valor = float(request.form.get('valor') or 0)
+        dc_tipo_pagamento = request.form.get('tipo_pagamento')
         data = parse_date(request.form.get('data')) or datetime.utcnow().date()
+
+        print("teste " + dc_tipo_pagamento)
+
+        cd_tipo_pagameto = db.session.query(payment_type.id).filter_by(name_payment_type=dc_tipo_pagamento).all()
+
+
+        print("teste " + str(cd_tipo_pagameto.id))
 
         if tipo not in ('receita', 'despesa'):
             flash('Tipo inválido.', 'danger')
         elif not descricao or valor <= 0:
             flash('Preencha descrição e valor (> 0).', 'danger')
         else:
-            db.session.add(Transaction(tipo=tipo, categoria=categoria, descricao=descricao, valor=valor, data=data))
+            db.session.add(Transaction(tipo=tipo, categoria=categoria, descricao=descricao, valor=valor, data=data,))
             db.session.commit()
             flash('Lançamento salvo!', 'success')
         return redirect(url_for('transacoes'))
@@ -111,8 +124,9 @@ def transacoes():
     trans = Transaction.query.order_by(Transaction.data.desc(), Transaction.id.desc()).all()
     total_receitas = sum(t.valor for t in trans if t.tipo == 'receita')
     total_despesas = sum(t.valor for t in trans if t.tipo == 'despesa')
+    payment_tp = payment_type.query.all()
     return render_template('transacoes.html', transacoes=trans,
-                           total_receitas=total_receitas, total_despesas=total_despesas)
+                           total_receitas=total_receitas, total_despesas=total_despesas, payment_type=payment_tp,)
 
 # ---------------- Metas & Projetos ----------------
 
