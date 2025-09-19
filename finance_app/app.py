@@ -19,6 +19,7 @@ class Transaction(db.Model):
     descricao = db.Column(db.String(200), nullable=False)
     valor = db.Column(db.Float, nullable=False)
     data = db.Column(db.Date, nullable=False, default=datetime.utcnow)
+    cd_payment_type = db.Column(db.Integer, nullable=True)
 
 class Goal(db.Model):
     __tablename__ = 'goals'
@@ -103,19 +104,16 @@ def transacoes():
         dc_tipo_pagamento = request.form.get('tipo_pagamento')
         data = parse_date(request.form.get('data')) or datetime.utcnow().date()
 
-        print("teste " + dc_tipo_pagamento)
-
-        cd_tipo_pagameto = db.session.query(payment_type.id).filter_by(name_payment_type=dc_tipo_pagamento).all()
-
-
-        print("teste " + str(cd_tipo_pagameto.id))
+        cd_tipo_pagameto = db.session.query(payment_type).filter_by(name_payment_type=dc_tipo_pagamento).first()
+        cd_pay_type = cd_tipo_pagameto.id
+        
 
         if tipo not in ('receita', 'despesa'):
             flash('Tipo inválido.', 'danger')
         elif not descricao or valor <= 0:
             flash('Preencha descrição e valor (> 0).', 'danger')
         else:
-            db.session.add(Transaction(tipo=tipo, categoria=categoria, descricao=descricao, valor=valor, data=data,))
+            db.session.add(Transaction(tipo=tipo, categoria=categoria, descricao=descricao, valor=valor, data=data, cd_payment_type=cd_pay_type,))
             db.session.commit()
             flash('Lançamento salvo!', 'success')
         return redirect(url_for('transacoes'))
