@@ -40,11 +40,17 @@ class Investment(db.Model):
     data_vencimento = db.Column(db.Date, nullable=True)
     valor_investido = db.Column(db.Float, nullable=False, default=0.0)
     taxa_retorno = db.Column(db.Float, nullable=True)  # em % ao ano, quando aplicável
+    cd_indexer = db.Column(db.String(40), nullable=True)
 
 class payment_type(db.Model):
     __tablename__ = 'payment_type'
     id = db.Column(db.Integer, primary_key=True)
     name_payment_type = db.Column(db.String(60), nullable=True)
+
+class Indexer(db.Model):
+    _tablename_= 'indexer'
+    id = db.Column(db.Integer, primary_key=True)
+    name_indexer = db.Column(db.String(40), nullable=False)
 
 # ---------------- Helpers ----------------
 
@@ -164,7 +170,10 @@ def investimentos(categoria):
         data_compra = parse_date(request.form.get('data_compra'))
         data_vencimento = parse_date(request.form.get('data_vencimento'))
         valor_investido = float(request.form.get('valor_investido') or 0)
+        indexador = request.form.get('indexador') or None
         taxa_retorno = float(request.form.get('taxa_retorno') or 0) if request.form.get('taxa_retorno') else None
+
+        name_indexer = db.session.query(Indexer).filter_by(name_indexer=indexador).first()
 
         if not nome_investimento or valor_investido <= 0:
             flash('Informe ao menos o nome do investimento e um valor > 0.', 'danger')
@@ -179,7 +188,8 @@ def investimentos(categoria):
 
     investimentos = Investment.query.filter_by(categoria=categoria).order_by(Investment.data_compra.desc().nullsLast()).all() if hasattr(db.text(''), 'nullsLast') else Investment.query.filter_by(categoria=categoria).all()
     total_categoria = sum(i.valor_investido for i in investimentos)
-    return render_template('investimentos.html', investimentos=investimentos, categoria=categoria, total_categoria=total_categoria)
+    index_invest = Indexer.query.all()
+    return render_template('investimentos.html', investimentos=investimentos, categoria=categoria, total_categoria=total_categoria, index_invest=index_invest,)
 
 # --------- Remoções simples ---------
 
