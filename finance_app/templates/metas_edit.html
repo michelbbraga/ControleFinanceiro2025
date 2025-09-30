@@ -4,28 +4,30 @@
 <div class="row g-3">
   <div class="col-md-5">
     <div class="card">
-      <div class="card-header">Nova meta</div>
+      {% if metas_edit %}
+      <div class="card-header">Edição de meta</div>
       <div class="card-body">
         <form method="post">
           <div class="mb-3">
             <label class="form-label">Nome da meta</label>
-            <input class="form-control" name="nome" required placeholder="ex.: Reserva de Emergência">
+            <input class="form-control" name="nome" required placeholder="ex.: Reserva de Emergência">{{metas_edit.nome}}
           </div>
           <div class="mb-3">
             <label class="form-label">Valor da meta (R$)</label>
-            <input type="number" step="0.01" class="form-control" name="valor_meta" required>
+            <input type="number" step="0.01" class="form-control" name="valor_meta" required>{{metas_edit.valor_meta}}
           </div>
           <div class="mb-3">
             <label class="form-label">Valor acumulado (R$)</label>
-            <input type="number" step="0.01" class="form-control" name="valor_acumulado" value="0">
+            <input type="number" step="0.01" class="form-control" name="valor_acumulado" value="0">{{metas_edit.valor_acumulado}}
           </div>
           <div class="mb-3">
             <label class="form-label">Prazo</label>
-            <input type="date" class="form-control" name="prazo">
+            <input type="date" class="form-control" name="prazo">{{metas_edit.prazo}}
           </div>
           <button class="btn btn-primary">Salvar</button>
         </form>
       </div>
+      {% endfor %}
     </div>
   </div>
   <div class="col-md-7">

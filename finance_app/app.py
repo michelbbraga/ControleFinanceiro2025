@@ -191,6 +191,12 @@ def investimentos(categoria):
     index_invest = Indexer.query.all()
     return render_template('investimentos.html', investimentos=investimentos, categoria=categoria, total_categoria=total_categoria, index_invest=index_invest,)
 
+
+# --------- Edições Simples ---------
+@app.post('/transacoes/<int:tid>/editar')
+def editar_meta():
+    metas = Goal.query.all()
+
 # --------- Remoções simples ---------
 
 @app.post('/transacoes/<int:tid>/excluir')
