@@ -52,6 +52,11 @@ class Indexer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name_indexer = db.Column(db.String(40), nullable=False)
 
+class goals_importance(db.Model):
+    _tablename_= 'goals_importance'
+    id = db.Column(db.Integer, primary_key=True)
+    dc_goal_importance = db.Column(db.String(50), nullable=True)
+
 # ---------------- Helpers ----------------
 
 def parse_date(date_str):
@@ -151,7 +156,8 @@ def metas():
         return redirect(url_for('metas'))
 
     metas = Goal.query.order_by(Goal.prazo.asc().nullsLast()).all() if hasattr(db.text(''), 'nullsLast') else Goal.query.all()
-    return render_template('metas.html', metas=metas)
+    goal_importance = goals_importance.query.all()
+    return render_template('metas.html', metas=metas, goal_importance=goal_importance,)
 
 # ---------------- Investimentos ----------------
 
@@ -192,10 +198,30 @@ def investimentos(categoria):
     return render_template('investimentos.html', investimentos=investimentos, categoria=categoria, total_categoria=total_categoria, index_invest=index_invest,)
 
 
-# --------- Edições Simples ---------
-@app.post('/transacoes/<int:tid>/editar')
-def editar_meta():
-    metas = Goal.query.all()
+# --------- Edições  ---------
+
+@app.route('/meta_editar/<int:gide>', methods=['GET', 'POST'])
+def meta_editar(gide):
+    #meta_editar = Transaction.query.get_or_404(gide)
+    print("teste-1", gide)
+    if request.method== 'POST':
+        with app.app_context():
+            meta_editar = Goal.query.filter_by(id=gide).first()
+            meta_editar.nome = request.form.get('nome')
+            meta_editar.valor_meta = float(request.form.get('valor_meta') or 0)
+            meta_editar.valor_acumulado = float(request.form.get('valor_acumulado') or 0)
+            meta_editar.prazo = parse_date(request.form.get('prazo'))
+            db.session.commit()
+            flash('Transação Atualizada.', 'info')
+    
+        return redirect(url_for('metas'))
+
+    metas = Goal.query.order_by(Goal.prazo.asc().nullsLast()).all() if hasattr(db.text(''), 'nullsLast') else Goal.query.all()
+    meta_editar = db.session.query(Goal).filter_by(id=gide).first()
+    goal_importance = goals_importance.query.all()
+    #print("teste-3", meta_editar.nome)
+    #print("teste-4", metas)
+    return render_template('meta_editar.html', metas=metas, meta_editar=meta_editar, goal_importance=goal_importance,)
 
 # --------- Remoções simples ---------
 

@@ -20,6 +20,15 @@
             <input type="number" step="0.01" class="form-control" name="valor_acumulado" value="0">
           </div>
           <div class="mb-3">
+            <label class="from-label">Nível de Importância</label>
+              <select  step="0.01" class="form-control" name="nivel_importancia">
+              {% for goal_impt in goal_importance %}
+              <option>{{ goal_impt.dc_goal_importance }}</option>
+              <p>{{ goal_impt.dc_goal_importance }}</p>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
             <label class="form-label">Prazo</label>
             <input type="date" class="form-control" name="prazo">
           </div>
@@ -51,7 +60,7 @@
               </div>
               <div class="text-end1 mt-2">
                 <div class="text-end1">
-                  <form method="post" action="{{ url_for('excluir_meta', gid=m.id) }}" onsubmit="return confirm('Editar esta meta?')">
+                  <form method="" action="{{ url_for('meta_editar', gide=m.id) }}" onsubmit="return confirm('Editar esta meta?')">
                     <button class="btn btn-sm btn-outline-danger">Editar</button>
                   </form>
                 </div>
