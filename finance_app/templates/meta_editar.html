@@ -37,7 +37,7 @@
           </form>
         </div>
       {% else %}
-        <p class="text-muted mb-0">Nenhuma meta cadastrada.</p>
+        <p class="text-desccard mb-0">Nenhuma meta cadastrada.</p>
       {% endif %}
     </div>
   </div>
@@ -52,7 +52,7 @@
               <div class="d-flex justify-content-between">
                 <div>
                   <strong>{{ m.nome }}</strong>
-                  {% if m.prazo %}<div><small class="text-muted">Prazo: {{ m.prazo.strftime('%d/%m/%Y') }}</small></div>{% endif %}
+                  {% if m.prazo %}<div><small class="text-desccard">Prazo: {{ m.prazo.strftime('%d/%m/%Y') }}</small></div>{% endif %}
                 </div>
                 <div class="text-end">
                   <div>{{ m.valor_acumulado|money }} / {{ m.valor_meta|money }}</div>
@@ -77,7 +77,7 @@
             </div>
           {% endfor %}
         {% else %}
-          <p class="text-muted mb-0">Nenhuma meta cadastrada.</p>
+          <p class="text-desccard mb-0">Nenhuma meta cadastrada.</p>
         {% endif %}
       </div>
     </div>

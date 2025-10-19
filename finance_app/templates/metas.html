@@ -24,7 +24,6 @@
               <select  step="0.01" class="form-control" name="nivel_importancia">
               {% for goal_impt in goal_importance %}
               <option>{{ goal_impt.dc_goal_importance }}</option>
-              <p>{{ goal_impt.dc_goal_importance }}</p>
               {% endfor %}
             </select>
           </div>
@@ -48,7 +47,19 @@
               <div class="d-flex justify-content-between">
                 <div>
                   <strong>{{ m.nome }}</strong>
-                  {% if m.prazo %}<div><small class="text-muted">Prazo: {{ m.prazo.strftime('%d/%m/%Y') }}</small></div>{% endif %}
+                  {% if m.prazo %}<div>
+                    {% for goal_impt in goal_importance %}
+                      {% if goal_impt.id == m.cd_goal_importance %}
+                        <small class="text-desccard">Prazo: {{ m.prazo.strftime('%d/%m/%Y') }}   Nível Importância: {{goal_impt.dc_goal_importance}} </small></div>
+                      {% endif %} 
+                    {% endfor %}
+                  {% else %}
+                    {% for goal_impt in goal_importance %}
+                      {% if goal_impt.id == m.cd_goal_importance %}<div>
+                        <small class="text-desccard">Nível Importância: {{goal_impt.dc_goal_importance}} </small></div>
+                      {% endif %} 
+                    {% endfor %}
+                  {% endif %}
                 </div>
                 <div class="text-end">
                   <div>{{ m.valor_acumulado|money }} / {{ m.valor_meta|money }}</div>
@@ -73,7 +84,7 @@
             </div>
           {% endfor %}
         {% else %}
-          <p class="text-muted mb-0">Nenhuma meta cadastrada.</p>
+          <p class="text-desccard mb-0">Nenhuma meta cadastrada.</p>
         {% endif %}
       </div>
     </div>

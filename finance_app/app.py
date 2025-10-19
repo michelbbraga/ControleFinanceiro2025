@@ -1,7 +1,9 @@
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func, case
+from sqlalchemy import func, case, text
+from datetime import date
+from sqlalchemy.dialects import sqlite
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///finance.db'
@@ -18,7 +20,7 @@ class Transaction(db.Model):
     categoria = db.Column(db.String(50), nullable=True)  # opcional (ex: alimentação, salário)
     descricao = db.Column(db.String(200), nullable=False)
     valor = db.Column(db.Float, nullable=False)
-    data = db.Column(db.Date, nullable=False, default=datetime.utcnow)
+    data = db.Column(db.Date, nullable=False, default=date)
     cd_payment_type = db.Column(db.Integer, nullable=True)
 
 class Goal(db.Model):
@@ -27,6 +29,7 @@ class Goal(db.Model):
     nome = db.Column(db.String(200), nullable=False)
     valor_meta = db.Column(db.Float, nullable=False)
     valor_acumulado = db.Column(db.Float, nullable=False, default=0.0)
+    cd_goal_importance = db.Column(db.Integer, nullable=True)
     prazo = db.Column(db.Date, nullable=True)
 
 class Investment(db.Model):
@@ -130,12 +133,21 @@ def transacoes():
         return redirect(url_for('transacoes'))
 
     # GET
+    dt_ini = (date.today().year, date.today().month, 1)
+    dt_fim= date.today()
+    dt_ini2 = date(*dt_ini)
+    #python_date_object_ini = datetime.strptime(dt_ini, "%Y-%m-%d").date()
+    #python_date_object_fim = datetime.strptime(dt_fim, "%Y-%m-%d").date()
+    print("teste ", type(dt_ini2), type(dt_fim))
+    print("teste ", dt_ini2, dt_fim)
     trans = Transaction.query.order_by(Transaction.data.desc(), Transaction.id.desc()).all()
-    total_receitas = sum(t.valor for t in trans if t.tipo == 'receita')
-    total_despesas = sum(t.valor for t in trans if t.tipo == 'despesa')
+    trans_total = Transaction.query.filter(Transaction.data >= dt_ini2,
+                                           Transaction.data <= dt_fim).all()
+    print("teste ", trans_total)
+    total_receitas = sum(t.valor for t in trans_total if t.tipo == 'receita')
+    total_despesas = sum(t.valor for t in trans_total if t.tipo == 'despesa')
     payment_tp = payment_type.query.all()
-    return render_template('transacoes.html', transacoes=trans,
-                           total_receitas=total_receitas, total_despesas=total_despesas, payment_type=payment_tp,)
+    return render_template('transacoes.html', transacoes=trans, total_receitas=total_receitas, total_despesas=total_despesas, payment_type=payment_tp,)
 
 # ---------------- Metas & Projetos ----------------
 
@@ -145,12 +157,16 @@ def metas():
         nome = request.form.get('nome')
         valor_meta = float(request.form.get('valor_meta') or 0)
         valor_acumulado = float(request.form.get('valor_acumulado') or 0)
+        nivel_importancia = request.form.get('nivel_importancia')
         prazo = parse_date(request.form.get('prazo'))
+
+        nv_importancia = db.session.query(goals_importance).filter_by(dc_goal_importance=nivel_importancia).first()
+        id_nv_importancia = nv_importancia.id
 
         if not nome or valor_meta <= 0:
             flash('Preencha o nome e um valor de meta > 0.', 'danger')
         else:
-            db.session.add(Goal(nome=nome, valor_meta=valor_meta, valor_acumulado=valor_acumulado, prazo=prazo))
+            db.session.add(Goal(nome=nome, valor_meta=valor_meta, valor_acumulado=valor_acumulado, prazo=prazo, cd_goal_importance=id_nv_importancia))
             db.session.commit()
             flash('Meta salva!', 'success')
         return redirect(url_for('metas'))
@@ -205,12 +221,18 @@ def meta_editar(gide):
     #meta_editar = Transaction.query.get_or_404(gide)
     print("teste-1", gide)
     if request.method== 'POST':
+        nivel_importancia = request.form.get('nivel_importancia')
         with app.app_context():
             meta_editar = Goal.query.filter_by(id=gide).first()
             meta_editar.nome = request.form.get('nome')
             meta_editar.valor_meta = float(request.form.get('valor_meta') or 0)
             meta_editar.valor_acumulado = float(request.form.get('valor_acumulado') or 0)
             meta_editar.prazo = parse_date(request.form.get('prazo'))
+
+            nv_importancia = db.session.query(goals_importance).filter_by(dc_goal_importance=nivel_importancia).first()
+            id_nv_importancia = nv_importancia.id
+            meta_editar.cd_goal_importance = id_nv_importancia
+
             db.session.commit()
             flash('Transação Atualizada.', 'info')
     

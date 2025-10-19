@@ -6,7 +6,7 @@
   <div class="col-md-4">
     <div class="card kpi-card">
       <div class="card-body">
-        <h6 class="text-muted">Receitas</h6>
+        <h6 class="text-desccard">Receitas</h6>
         <h3>{{ receitas|money }}</h3>
       </div>
     </div>
@@ -14,7 +14,7 @@
   <div class="col-md-4">
     <div class="card kpi-card">
       <div class="card-body">
-        <h6 class="text-muted">Despesas</h6>
+        <h6 class="text-desccard">Despesas</h6>
         <h3>{{ despesas|money }}</h3>
       </div>
     </div>
@@ -22,7 +22,7 @@
   <div class="col-md-4">
     <div class="card kpi-card">
       <div class="card-body">
-        <h6 class="text-muted">Saldo</h6>
+        <h6 class="text-desccard">Saldo</h6>
         <h3 class="{{ 'text-success' if saldo>=0 else 'text-danger' }}">{{ saldo|money }}</h3>
       </div>
     </div>
@@ -78,7 +78,7 @@
             {% endfor %}
           </ul>
         {% else %}
-          <p class="text-muted mb-0">Sem investimentos lançados ainda.</p>
+          <p class="text-desccard mb-0">Sem investimentos lançados ainda.</p>
         {% endif %}
       </div>
     </div>
@@ -98,11 +98,11 @@
               <div class="progress" role="progressbar" aria-valuenow="{{ progresso|round(0) }}" aria-valuemin="0" aria-valuemax="100">
                 <div class="progress-bar" style="width: {{ progresso if progresso<=100 else 100 }}%""></div>
               </div>
-              {% if m.prazo %}<small class="text-muted">Prazo: {{ m.prazo.strftime('%d/%m/%Y') }}</small>{% endif %}
+              {% if m.prazo %}<small class="text-desccard">Prazo: {{ m.prazo.strftime('%d/%m/%Y') }}</small>{% endif %}
             </div>
           {% endfor %}
         {% else %}
-          <p class="text-muted mb-0">Sem metas cadastradas.</p>
+          <p class="text-desccard mb-0">Sem metas cadastradas.</p>
         {% endif %}
       </div>
     </div>
@@ -132,7 +132,7 @@
       </tbody>
     </table>
     {% else %}
-      <p class="text-muted mb-0">Sem transações ainda.</p>
+      <p class="text-desccard mb-0">Sem transações ainda.</p>
     {% endif %}
   </div>
 </div>
