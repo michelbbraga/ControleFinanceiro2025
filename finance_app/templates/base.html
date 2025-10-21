@@ -26,6 +26,13 @@
             <li><a class="dropdown-item" href="{{ url_for('investimentos', categoria='tesouro_direto') }}">Tesouro Direto</a></li>
             <li><a class="dropdown-item" href="{{ url_for('investimentos', categoria='fiis') }}">FIIs</a></li>
           </ul>
+        <li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Configurações</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ url_for('categoria_lancamento') }}">Categoria Lançamento</a></li>
+            <li><a class="dropdown-item" href="">Tipo de Pagamento</a></li>
+          </ul>
         </li>
       </ul>
       <a class="btn btn-outline-light" href="{{ url_for('init_db') }}">Inicializar DB</a>

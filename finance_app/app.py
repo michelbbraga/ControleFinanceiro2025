@@ -245,6 +245,14 @@ def meta_editar(gide):
     #print("teste-4", metas)
     return render_template('meta_editar.html', metas=metas, meta_editar=meta_editar, goal_importance=goal_importance,)
 
+@app.route('/categoria_lancamento', methods=['GET', 'POST'])
+def categoria_lancamento():
+    if request.method== 'POST':
+        flash('teste aqui')
+        return redirect(url_for('categoria_lacamento'))
+    
+    return render_template('categoria_lancamento.html')
+
 # --------- Remoções simples ---------
 
 @app.post('/transacoes/<int:tid>/excluir')
